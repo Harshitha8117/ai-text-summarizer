@@ -6,6 +6,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 🔥 Dynamic API URL (IMPORTANT for deployment)
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const handleSubmit = async () => {
     if (!text.trim()) {
       setError("Please enter some text");
@@ -17,7 +21,7 @@ function App() {
     setResult(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/summarize", {
+      const res = await fetch(`${API_URL}/api/summarize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -33,7 +37,7 @@ function App() {
 
       setResult(data);
     } catch (err) {
-      setError(err.message);
+      setError("Failed to connect to server");
     }
 
     setLoading(false);
@@ -64,9 +68,13 @@ function App() {
 
           <h3>Key Points</h3>
           <ul>
-            {result.keyPoints?.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
+            {result.keyPoints?.length > 0 ? (
+              result.keyPoints.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))
+            ) : (
+              <li>No key points generated</li>
+            )}
           </ul>
 
           <h3>Sentiment</h3>
